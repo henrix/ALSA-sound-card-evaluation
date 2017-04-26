@@ -1,0 +1,16 @@
+281c281
+< void showlatency(size_t latency)
+---
+> int showlatency(size_t latency)
+286a287
+> 	return d * 1000;
+501a503
+> 	int return_value;
+620c622
+< 		showlatency(latency);
+---
+> 		return_value = showlatency(latency);
+700c702
+< 	return 0;
+---
+> 	return return_value;

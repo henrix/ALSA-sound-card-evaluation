@@ -1,0 +1,6 @@
+817,818c817,818
+< 			freq = freq < 50 ? 50 : freq;
+< 			freq = freq > 5000 ? 5000 : freq;
+---
+> 			//freq = freq < 50 ? 50 : freq;
+> 			//freq = freq > 5000 ? 5000 : freq;
