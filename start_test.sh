@@ -120,14 +120,15 @@ if [ "$TESTFUNC" == "all" ] || [ "$TESTFUNC" == "thd" ]; then
 				if [ "$samplerate" == "44100" ]; then
 					./alsa-lib*/test/pcm --device="plug:$PCM_PLAYBACK" --channels=2 --rate=$samplerate --format=$sampleformat --frequency=1000 & pid_playback=$!
 					sleep 1
-					arecord --device=$PCM_CAPTURE  --rate=48000 --channels=2 --format=$sampleformat --duration=1  $WAVPATH & pid_arecord=$!
+					arecord --device=$PCM_CAPTURE  --rate=48000 --channels=2 --format=$sampleformat --duration=1 - > $WAVPATH 2> /dev/null & pid_arecord=$!
 				else
 					./alsa-lib*/test/pcm --device=$PCM_PLAYBACK --channels=2 --rate=$samplerate --format=$sampleformat --frequency=1000 & pid_playback=$!
 					sleep 1
-					arecord --device=$PCM_CAPTURE --rate=$samplerate --channels=2 --format=$sampleformat --duration=1  $WAVPATH & pid_arecord=$!
+					arecord --device=$PCM_CAPTURE --rate=$samplerate --channels=2 --format=$sampleformat --duration=1 - > $WAVPATH 2> /dev/null & pid_arecord=$!
 				fi
 
-				wait $pid_arecord
+				sleep 1
+				kill $pid_arecord
 				kill $pid_playback
 				sleep 1
         	done
@@ -173,15 +174,16 @@ if [ "$TESTFUNC" == "all" ] || [ "$TESTFUNC" == "crosstalk" ]; then
 		if [ "$samplerate" == "44100" ]; then
 			aplay --device="plug:$PCM_PLAYBACK"  test-data/test-1kHz-sine-1dBFS-$samplerate-left-active.wav & pid_aplay=$!
 			sleep 1
-			arecord --device=$PCM_CAPTURE --rate=48000 --channels=2 --format=S32_LE --duration=1  $WAVPATH & pid_arecord=$!
+			arecord --device=$PCM_CAPTURE --rate=48000 --channels=2 --format=S32_LE --duration=1 - > $WAVPATH 2> /dev/null & pid_arecord=$!
 		else
 			aplay --device=$PCM_PLAYBACK  test-data/test-1kHz-sine-1dBFS-$samplerate-left-active.wav & pid_aplay=$!
 			sleep 1
-			arecord --device=$PCM_CAPTURE --rate=$samplerate --channels=2 --format=S32_LE --duration=1  $WAVPATH & pid_arecord=$!
+			arecord --device=$PCM_CAPTURE --rate=$samplerate --channels=2 --format=S32_LE --duration=1 - > $WAVPATH 2> /dev/null & pid_arecord=$!
 		fi
-		
-		wait $pid_arecord
-		wait $pid_aplay
+
+		sleep 1
+		kill $pid_arecord
+		kill $pid_aplay
 		if [ "$samplerate" == "44100" ]; then
 			OCTAVE_RESULT=`./octave-scripts/crosstalk.m $WAVPATH 48000 1`
 		else
@@ -236,13 +238,15 @@ if [ "$TESTFUNC" == "all" ] || [ "$TESTFUNC" == "magnitude-spectrum" ]; then
 			if [ "$samplerate" == "44100" ]; then
 				./alsa-lib*/test/pcm --device="plug:$PCM_PLAYBACK" --channels=2 --rate=$samplerate --format=S16_LE --frequency=$frequency & pid_playback=$!
 				sleep 1
-				arecord --device=$PCM_CAPTURE --rate=48000 --channels=2 --format=S16_LE --duration=1  $WAVPATH & pid_arecord=$!
+				arecord --device=$PCM_CAPTURE --rate=48000 --channels=2 --format=S16_LE --duration=1 - > $WAVPATH 2> /dev/null & pid_arecord=$!
 			else
 				./alsa-lib*/test/pcm --device=$PCM_PLAYBACK --channels=2 --rate=$samplerate --format=S16_LE --frequency=$frequency & pid_playback=$!
 				sleep 1
-				arecord --device=$PCM_CAPTURE --rate=$samplerate --channels=2 --format=S16_LE --duration=1  $WAVPATH & pid_arecord=$!
+				arecord --device=$PCM_CAPTURE --rate=$samplerate --channels=2 --format=S16_LE --duration=1 - > $WAVPATH 2> /dev/null & pid_arecord=$!
 			fi
-			wait $pid_arecord
+
+			sleep 1
+			kill $pid_arecord
 			kill $pid_playback
 		done
 		echo "Start plotting magnitude spectrum. This can take a while..."
